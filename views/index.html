@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8" />
+	<title>Weighted cliques</title>
+	<style type="text/css">		body { 
+			margin: 15px; 
+			font-family:sans-serif;
+			text-align:center;
+      font-size:1.2em;
+		}
+    textarea {
+				font-size:1em;
+			  }
+    
+			  button {
+			  	font-size:1.2em;
+			  }
+    
+	</style>
+<!-- jquery -->
+	<script src="https://code.jquery.com/jquery-1.12.4.min.js">
+	</script>
+  <script src="https://github.com/mdaines/viz.js/releases/download/v1.8.0/viz-lite.js"></script>
+	<script>
+    
+  function go() {
+    
+    $('#api').html('');
+    $('#dot').html('');
+    $('#results').html('');
+    
+    var data = $('#data').val();
+  
+    
+    if (data != '') {
+      data = data.replace(/\s+$/,'');
+      var input = data.split(/\n/);
+      
+      //alert("input=" + JSON.stringify(input));
+      
+      $('#api').html('<a href="/find?q=' + encodeURIComponent(JSON.stringify(data)) + '" target="_new">API</a>');
+  
+  /*
+    $.get('/find?q=' + encodeURIComponent(JSON.stringify(input)),  function(data) {
+      alert('hi');
+     
+    });*/
+      
+   $.post('/find', { input },  function(data) {
+      if (data) {
+        $('#results').html(JSON.stringify(data.clusters));
+        
+        
+var svg = Viz(data.dot, "svg", "dot");
+	document.getElementById("dot").innerHTML = svg;
+      }
+     
+    });        
+      
+    }
+  } 
+
+		   
+	</script>
+</head>
+<body>
+<h1>
+	Weighted cliques
+</h1>
+<p>
+	Dror G. Feitelson's weighted clique algorithm described in 
+  <a href="http://informationr.net/ir/9-4/paper192.html" target="_new">On identifying name equivalences in digital libraries</a>. 
+  For more details see <a href="http://iphylo.blogspot.co.uk/2009/01/equivalent-author-names.html" target="_new">Equivalent author names</a>.
+  This version implemented in Javascript, and uses <a href="https://github.com/mdaines/viz.js">mdaines/viz.js</a>,
+  <a href="https://github.com/cpettitt/graphlib">cpettitt/graphlib</a>, and <a href="https://github.com/janogonzalez/priorityqueuejs">janogonzalez/priorityqueuejs</a>
+</p>
+  <p>
+    Code on <a href="https://glitch.com/edit/#!/linen-baseball?path=README.md">Glitch</a>.
+  </p>
+<div style="width:100%;padding-bottom:20px;">
+  
+    <p>
+      Input a list of author first names and initials, one per line.
+  </p>
+    <textarea id="data" rows="5" cols="40">
+A B C
+Abe Bob C
+Abe B
+Ace D E
+A D
+Abe F G
+A      
+    </textarea>
+  
+<!-- Aaron D
+Aaron D.
+Andrew B
+Andrew B T
+Andrew B. T.
+A B
+A B T
+A   -->  
+  
+    <br />
+    <button onclick="go()">Go</button>
+  
+
+<div id="api">
+  API call will go here
+</div>
+  <h3>
+    Results
+  </h3>
+  <h4>
+    Clusters of similar strings
+  </h4>
+<div id="results">
+</div>
+  
+  <!-- <div id="dot" style="white-space:pre;overflow:auto;font-family:sans-serif;font-size:12px;text-align:left;">
+</div> -->
+  
+<h4>
+    Graph of name string similarity
+  </h4>  
+  
+  <div id="dot">
+</div>
+
+  
+  </div>
+
+</body>
+</html>
